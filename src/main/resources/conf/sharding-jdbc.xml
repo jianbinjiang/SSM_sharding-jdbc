@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.dangdang.com/schema/ddframe/rdb
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd">
+
+	<!-- 引入jdbc配置文件 -->
+	<!-- <context:property-placeholder location="classpath:conf/jdbc.properties" /> -->
+	<!--druid配置数据源 -->
+	<bean id="master0" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc_driverClassName}" />
+		<property name="username" value="${jdbc_username}" />
+		<property name="url" value="jdbc:mysql://localhost:3306/demodb00?useUnicode=true&amp;characterEncoding=utf8" />
+		<property name="password" value="${jdbc_password}" />
+		<property name="filters" value="stat" />
+		<property name="maxActive" value="10" />
+		<property name="initialSize" value="1" />
+		<property name="maxWait" value="60000" />
+		<property name="minIdle" value="1" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 'x'" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize"
+			value="50" />
+		<property name="maxOpenPreparedStatements" value="100" />
+	</bean>
+
+	<bean id="master1" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc_driverClassName}" />
+		<property name="username" value="${jdbc_username}" />
+		<property name="url" value="jdbc:mysql://localhost:3306/demodb01?useUnicode=true&amp;characterEncoding=utf8" />
+		<property name="password" value="${jdbc_password}" />
+		<property name="filters" value="stat" /> 
+		<property name="maxActive" value="10" />
+		<property name="initialSize" value="1" />
+		<property name="maxWait" value="60000" />
+		<property name="minIdle" value="1" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 'x'" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize"
+			value="50" />
+		<property name="maxOpenPreparedStatements" value="100" />
+	</bean>
+
+	<rdb:master-slave-data-source id="rbb_0"
+		master-data-source-ref="master0" slave-data-sources-ref="master0" />
+	<rdb:master-slave-data-source id="rbb_1"
+		master-data-source-ref="master1" slave-data-sources-ref="master1" />
+
+	<rdb:strategy id="idDbSharding" sharding-columns="id"
+		algorithm-class="com.demo.strategy.DbAlgorithm" />
+
+	<rdb:strategy id="idTbSharding" sharding-columns="age"
+		algorithm-class="com.demo.strategy.TbAlgorithm" />
+
+	<rdb:data-source id="wholeDataSource">
+		<rdb:sharding-rule data-sources="rbb_0,rbb_1">
+			<rdb:table-rules>
+				<rdb:table-rule logic-table="user" actual-tables="user_0,user_1"
+					database-strategy="idDbSharding" table-strategy="idTbSharding" />
+			</rdb:table-rules>
+		</rdb:sharding-rule>
+	</rdb:data-source>
+
+</beans>
