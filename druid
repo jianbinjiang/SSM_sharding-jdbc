@@ -1,0 +1,77 @@
+<!-- 阿里 druid 数据库连接池 -->  
+  < bean id = "dataSource" class = "com.alibaba.druid.pool.DruidDataSource"destroy-method = "close" >    
+       <!-- 数据库基本信息配置 -->  
+       < property name = "url" value = "${url}" />    
+       < property name = "username" value = "${username}" />    
+       < property name = "password" value = "${password}" />    
+       < property name = "driverClassName" value = "${driverClassName}" />  
+        <!-- 监控统计用的   -->  
+       < property name = "filters" value = "${filters}" />    
+        <!-- 最大并发连接数 -->  
+       < property name = "maxActive" value = "${maxActive}" />  
+       <!-- 初始化连接数量 -->  
+       < property name = "initialSize" value = "${initialSize}" />  
+       <!-- 配置获取连接等待超时的时间 -->  
+       < property name = "maxWait" value = "${maxWait}" />  
+       <!-- 最小空闲连接数 -->  
+       < property name = "minIdle" value = "${minIdle}" />    
+       <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->  
+       < property name = "timeBetweenEvictionRunsMillis" value ="${timeBetweenEvictionRunsMillis}" />  
+       <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->  
+       < property name = "minEvictableIdleTimeMillis" value ="${minEvictableIdleTimeMillis}" />    
+       < property name = "validationQuery" value = "${validationQuery}" />    
+       < property name = "testWhileIdle" value = "${testWhileIdle}" />    
+       < property name = "testOnBorrow" value = "${testOnBorrow}" />    
+       < property name = "testOnReturn" value = "${testOnReturn}" />    
+       < property name = "maxOpenPreparedStatements" value ="${maxOpenPreparedStatements}" />  
+       <!-- 打开 removeAbandoned 功能 -->  
+       < property name = "removeAbandoned" value = "${removeAbandoned}" />  
+       <!-- 1800 秒，也就是 30 分钟 -->  
+       < property name = "removeAbandonedTimeout" value ="${removeAbandonedTimeout}" />  
+       <!-- 关闭 abanded 连接时输出错误日志 -->     
+       < property name = "logAbandoned" value = "${logAbandoned}" />  
+  </ bean > 
+      url: jdbc:mysql:// localhost :3306/ newm  
+    driverClassName: com.mysql.jdbc.Driver  
+    username: root  
+    password: root  
+    filters: stat  
+    maxActive: 20  
+    initialSize: 1  
+    maxWait: 60000  
+    minIdle: 10  
+    maxIdle: 15  
+    timeBetweenEvictionRunsMillis: 60000  
+    minEvictableIdleTimeMillis: 300000  
+    validationQuery: SELECT 'x'  
+    testWhileIdle: true  
+    testOnBorrow: false  
+    testOnReturn: false  
+    maxOpenPreparedStatements: 20  
+    removeAbandoned: true  
+    removeAbandonedTimeout: 1800  
+    logAbandoned: true   
+    
+ web.xml   
+    <!-- 连接池 启用 Web 监控统计功能    start-->  
+  < filter >  
+     < filter-name > DruidWebStatFilter </ filter-name >  
+     < filter-class > com.alibaba.druid.support.http.WebStatFilter </ filter-class >  
+     < init-param >  
+         < param-name > exclusions </ param-name >  
+         < param-value > *. js ,*. gif ,*. jpg ,*. png ,*. css ,*. ico ,/ druid /* </ param-value >  
+     </ init-param >  
+  </ filter >  
+  < filter-mapping >  
+     < filter-name > DruidWebStatFilter </ filter-name >  
+     < url-pattern > /* </ url-pattern >  
+  </ filter-mapping >  
+  < servlet >  
+     < servlet-name > DruidStatView </ servlet-name >  
+     < servlet-class > com.alibaba.druid.support.http.StatViewServlet </ servlet-class >  
+  </ servlet >  
+  < servlet-mapping >  
+     < servlet-name > DruidStatView </ servlet-name >  
+     < url-pattern > / druid /* </ url-pattern >  
+  </ servlet-mapping >  
+  <!-- 连接池 启用 Web 监控统计功能    end--> 

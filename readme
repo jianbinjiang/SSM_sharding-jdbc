@@ -1,0 +1,3 @@
+springmvc+spring+mybaits+druid+maven 构建
+sharding-jdbc实现分库分表，其中以id进行分库，以age进行分表。
+druid访问地址:http://localhost:8080/SSMDemo/druid/login.html
